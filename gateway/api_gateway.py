@@ -11,13 +11,13 @@ def home():
 
 @app.route('/users')
 def get_users():
-    response = requests.get('http://localhost:5002')
+    response = requests.get('http://localhost:5001')
     return jsonify(response.text)
 
 
 @app.route('/products')
 def get_products():
-    response = requests.get('http://localhost:5001')
+    response = requests.get('http://localhost:5002')
     return jsonify(response.text)
 
 
