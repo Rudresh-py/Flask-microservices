@@ -50,14 +50,18 @@ class RegisterApi(Resource):
         username = data["username"]
         password = data["password"]
         if not username or not password:
-            return jsonify(
-                {'error': 'Username and password are required'})
+            return jsonify({
+                'error': 'Username and password are required'
+            })
 
         user = User(username=username,
                     password=generate_password_hash(password))
         db.session.add(user)
         db.session.commit()
-        return jsonify({'id': user.id, 'username': user.username, "message": "you are succucssfully created"})
+        return jsonify({
+            'id': user.id, 'username': user.username,
+            "message": "you are successfully created"
+        })
 
 
 # api.add_resource(RegisterApi, '/register')
@@ -88,15 +92,21 @@ class LoginApi(Resource):
         username = data["username"]
         password = data["password"]
         if not username or not password:
-            return jsonify(
-                {'error': 'Username and password are required'})
+            return jsonify({
+                'error': 'Username and password are required'
+            })
 
         user = User.query.filter_by(username=username).first()
         if not user or not check_password_hash(user.password, password):
-            return jsonify({'error': 'Invalid username or password'})
+            return jsonify({
+                'error': 'Invalid username or password'
+            })
 
         session['user_id'] = user.id
-        return jsonify({'id': user.id, 'username': user.username, "message": "you are succucssfully created"})
+        return jsonify({
+            'id': user.id, 'username': user.username,
+            "message": "you are successfully created"
+        })
 
 
 # api.add_resource(LoginApi, '/login')
@@ -124,9 +134,13 @@ class LogoutApi(Resource):
         session["user_id"] = data["user_id"]
         if 'user_id' in session:
             session.pop('user_id', None)
-            return jsonify({'message': 'Logged out successfully'})
+            return jsonify({
+                'message': 'Logged out successfully'
+            })
         else:
-            return jsonify({'error': 'User is not authenticated'})
+            return jsonify({
+                'error': 'User is not authenticated'
+            })
 
 
 # api.add_resource(LogoutApi, '/logout')
@@ -150,7 +164,9 @@ class CreateProduct(Resource):
         new_product = Products(id=id, title=title, image=image)
         db.session.add(new_product)
         db.session.commit()
-        return jsonify({'status': 'success'})
+        return jsonify({
+            'status': 'success your product is created'
+        })
 
 
 # api.add_resource(CreateProduct, '/products')
@@ -172,6 +188,8 @@ class LikeProducts(Resource):
     def get(self, id):
         # req = requests.get('http://localhost:5001/products')
         # json = req.json()
+        data = request.get_json()
+        session['user_id'] = data['user_id']
 
         try:
             if 'user_id' in session:
@@ -183,9 +201,13 @@ class LikeProducts(Resource):
                     db.session.add(productUser)
                     db.session.commit()
                 else:
-                    return jsonify({'error': 'you already liked this product'})
+                    return jsonify({
+                        'error': 'you already liked this product'
+                    })
             else:
-                return jsonify({'error': 'User is not authenticated'})
+                return jsonify({
+                    'error': 'User is not authenticated'
+                })
         except Exception as e:
             abort(400)
         product_user = {
