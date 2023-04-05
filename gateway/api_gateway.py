@@ -6,6 +6,7 @@ app.config['SECRET_KEY'] = 'mygatewaysecretkey'
 
 
 user_service_url = 'http://127.0.0.1:5002'
+product_service_url = 'http://127.0.0.1:5001'
 
 
 @app.route('/')
@@ -15,7 +16,7 @@ def home():
 
 @app.route('/products', methods=['GET'])
 def get_products():
-    response = requests.get('http://localhost:5001/products')
+    response = requests.get(f'{product_service_url}/products')
     data = response.json()
     return jsonify(data)
 
@@ -28,7 +29,8 @@ def create_products():
         "image": request.json.get('image'),
         "likes": request.json.get('likes')
     }
-    response = requests.post('http://localhost:5001/products', json=new_product)
+    response = requests.post(f'{product_service_url}/products',
+                             json=new_product)
     data = response.json()
     return jsonify(data)
 
@@ -73,9 +75,16 @@ def logout():
 
 @app.route('/products/<int:id>/like', methods=['GET'])
 def like_products(id):
-    response = requests.get(f'{user_service_url}/products/{id}/like')
-    data = response.json()
-    return jsonify(data)
+    try:
+        user_id = {
+            "user_id": session["user_id"]
+            }
+        response = requests.get(f'{user_service_url}/products/{id}/like',
+                                json=user_id)
+        data = response.json()
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': 'User is not authenticated'})
 
 
 if __name__ == "__main__":
