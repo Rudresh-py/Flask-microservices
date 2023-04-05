@@ -41,7 +41,9 @@ class ProductResource(Resource):
         likes = data['likes']
 
         if not title or not image:
-            return {'error': 'title and image are required'}, 400
+            return jsonify({
+                'error': 'title and image are required'
+            })
 
         new_product = Product(title=title, image=image, likes=likes)
         db.session.add(new_product)
@@ -63,10 +65,14 @@ class LikesUpdateView(Resource):
         data = request.get_json()
         liked_prod = Product.query.filter_by(id=id).first()
         if not liked_prod:
-            return jsonify({'message': 'Product not found'})
+            return jsonify({
+                'message': 'Product not found'
+            })
         liked_prod.likes = liked_prod.likes + 1
         db.session.commit()
-        return jsonify({'message': 'your like is updated'})
+        return jsonify({
+            'message': 'your like is updated'
+        })
 
 
 api.add_resource(ProductResource, '/products')
